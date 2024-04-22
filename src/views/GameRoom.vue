@@ -18,29 +18,23 @@
 
 
 <script setup>
-import {onBeforeMount} from 'vue'
+import {onBeforeMount, ref} from 'vue'
 import { useRoute } from 'vue-router';
 
 const pName = localStorage.getItem('playerName')
 const route = useRoute()
 
-let currentState = 'WaitPlayers';
+let currentState = ref('WaitPlayers');
 
-onBeforeMount(() => {
-  
-alert(currentState)
-  const websocket = new WebSocket(`ws://127.0.0.1:7000/start/${route.params.id}?name=${pName}`);
-  websocket.onmessage = (event) => {}
-  websocket.onmessage = function (event){
-    const message = event.data;
-    if (currentState === "WaitPlayers" && message === "Game can be started"){
+const websocket = new WebSocket(`ws://127.0.0.1:7000/start/${route.params.id}?name=${pName}`);
+websocket.onmessage = function (event){
+  const message = event.data;
+  if (currentState.value === "WaitPlayers" && message === "Game can be started"){
 
-      currentState = "WaitChoice"
-      alert(currentState)
-    }
-    
+    currentState.value = "WaitChoice"
+    alert(currentState.value)
   }
-})
+}
 
 
 </script>

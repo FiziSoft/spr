@@ -1,0 +1,2 @@
+F:\FiziGames\Front\vueproject1\obj\Debug\vueproject1.esproj.SuggestedBindingRedirects.cache
+F:\FiziGames\Front\vueproject1\obj\Debug\vueproject1.esproj.CoreCompileInputs.cache

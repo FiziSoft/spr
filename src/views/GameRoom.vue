@@ -3,6 +3,10 @@
     {{ room.name }}
     {{ room.players.length }}
   </div>
+
+  <div v-for="i in room.players" :key="i.id">
+    {{ i.name }}
+  </div>
 </template>
 
 

@@ -35,7 +35,7 @@
     
     import axios from "axios";
     import {ref, computed} from "vue";
-    import {router} from "../router.js"
+    import {router} from "../../router.js"
     
     import { useRoute } from 'vue-router';
 

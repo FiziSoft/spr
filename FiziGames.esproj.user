@@ -7,7 +7,7 @@
   "type": "chrome",
   "request": "launch",
   "url": "http://localhost:8080",
-  "webRoot": "F:\\FiziGames\\Front\\vueproject1"
+  "webRoot": "F:\\FiziGames\\Front\\FiziGames"
 }</LaunchJsonTarget>
   </PropertyGroup>
 </Project>

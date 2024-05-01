@@ -24,8 +24,8 @@
     <a href="/connect/{{ room.id }}"> http://localhost:8080/connect/{{ room.id }}</a>
     <br>  
     <br>  
-    <br>  
-    <button>  http://localhost:8080/connect/{{ room.id }} </button>
+    <br>
+    <qrcode-vue :value="qrCodeValue" :size="300" level="H" />
   </div>
     
 
@@ -34,9 +34,9 @@
 
     <div>
     </div>
-    <button class="btn_rock" value="rock"></button>
-    <button class="btn_sci" value="scissor"></button>
-    <button class="btn_paper" value="paper"></button>
+    <button @click="()=> sendPlayerChoiceToServer('rock')" class="btn_rock" value="rock"></button>
+    <button @click="()=> sendPlayerChoiceToServer('scissors')" class="btn_sci" value="scissor"></button>
+    <button @click="()=> sendPlayerChoiceToServer('paper')" class="btn_paper" value="paper"></button>
 
   </div>
     <!-- <div>
@@ -56,6 +56,7 @@
 <script setup>
 import {onBeforeMount, ref, reactive} from 'vue'
 import { useRoute } from 'vue-router';
+import QrcodeVue from 'qrcode.vue'
 
 const pName = localStorage.getItem('playerName')
 const route = useRoute()
@@ -65,6 +66,8 @@ const room = reactive({
   name: "",
   players: [],
 })
+
+const qrCodeValue = `http://localhost:8080/connect/${route.params.id}`
 
 const userHash = localStorage.getItem("hash")
 let websocket;
@@ -77,6 +80,11 @@ if (userHash){
 
 let gameState = ref("WaitPlayers");
 
+const sendPlayerChoiceToServer = (choice) => {
+  websocket.send(choice)
+}
+
+
 websocket.onmessage = function (event){
   const message = JSON.parse(event.data);
 
@@ -87,15 +95,15 @@ websocket.onmessage = function (event){
 
   // TODO:
   if (eventType === "GameCanBeStart"){
-
-
     gameState.value = "GameCanBeStart"
 
     alert(gameState.value)
   }
+  else if (["Win", "Draw", "Lose"].includes(eventType)){
+    alert(eventType)
+  }
   // TODO:
   // else if (eventType == "BBB"){doBBB}
-
 
   Object.assign(room, message["room"])  /// что єто?
 }

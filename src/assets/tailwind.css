@@ -26,7 +26,7 @@
 .btn_rock {
   width: 200px;
   height: 200px;
-  background-image: url("i:\FiziGames\Front\FiziGames\src\assets\PRS\rock.svg");
+  background-image: url("./PRS/rock.svg");
   background-repeat: no-repeat;
   
 }
@@ -34,7 +34,7 @@
 .btn_paper {
   width: 200px;
   height: 200px;
-  background-image: url("i:\FiziGames\Front\FiziGames\src\assets\PRS\toilet-paper.svg");
+  background-image: url("./PRS/toilet-paper.svg");
   background-repeat: no-repeat;
   background-size: contain;
   
@@ -43,6 +43,6 @@
 .btn_sci {
   width: 200px;
   height: 200px;
-  background-image: url("i:\FiziGames\Front\FiziGames\src\assets\PRS\scissors.svg");
+  background-image: url("./PRS/scissors.svg");
   background-repeat: no-repeat;
 }

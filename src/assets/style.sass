@@ -1,0 +1,185 @@
+
+$color-gradient: linear-gradient(to right, #DA22FF 0%, #9733EE  51%, #DA22FF  100%)
+$borderRadius: 40px
+$shadowBox: 0px 5px 10px 0px rgba(0, 0, 0, 0.3)
+
+*, *::before, *::after 
+  margin: 0
+  padding: 0
+  border: 0
+  box-sizing: border-box
+
+
+h1, h2, h3, h4, a, button, input
+  font-weight: inherit
+  font-size: inherit
+  font-family: "Shantell Sans", cursive
+  
+
+
+
+html, body  
+  height: 100%
+  margin: 0
+  padding: 0
+  font-weight:300
+  font-family: "Shantell Sans", cursive
+  font-weight: 300
+  color: white
+  background: rgb(65,41,90)
+  background: linear-gradient(90deg, rgba(65,41,90,1) 0%, rgba(47,7,67,1) 100%)
+
+
+
+input 
+  
+  background: transparent
+  font-weight: 100
+  outline: 0
+
+.appContainer 
+  position: absolut
+  height: 100%
+  width: 100%
+
+
+.menuFizi 
+    font-size: 25px
+    background: $color-gradient
+    -webkit-background-clip: text
+    -webkit-text-fill-color: transparent
+  
+.btnDiv
+  padding: 10px
+
+.btn-grad 
+  width: 100%
+  background-image: $color-gradient
+  margin-top: 25px
+  padding: 25px 45px
+  text-align: center
+  text-transform: uppercase
+  transition: 0.5s
+  background-size: 200% auto
+  color: white           
+  border-radius: $borderRadius
+  display: block
+
+
+.btn-grad:hover 
+  background-position: right center 
+  color: #fff
+  text-decoration: none
+
+
+
+.form_create 
+  font-size: 30px
+  font-weight:100
+
+.containerFormCreate
+  font-size: 18px
+  display: flex
+  justify-content: center
+  text-align: left
+
+.formCreate
+  width: 500px
+  border: 1px solid rgba(255, 255, 255, 0.1)
+  padding: 40px 
+  margin-top: 35px
+  box-shadow: $shadowBox
+  border-radius: $borderRadius
+
+
+
+.formElement
+  padding: 10px
+  display: flex
+  justify-content: space-between
+  align-items: center
+
+.input-gradient 
+  text-align: center
+  width: 50%
+  border-radius: $borderRadius
+  padding: 20px
+  margin: 20px 0
+  border: 1px solid rgba(255, 255, 255, 0.1)
+
+  box-shadow: $shadowBox
+  color: #fff
+
+  &:focus
+    box-shadow: none
+    border-bottom: 1px
+    border-style: solid
+    border-image: $color-gradient 1
+    border-radius: $borderRadius
+
+  &:hover
+    cursor: auto
+    box-shadow: none
+    border-bottom: 1px
+    border-style: solid
+    border-image: $color-gradient 1
+    border-radius: $borderRadius
+    
+
+
+
+
+.mainContainer
+   display: flex
+   flex-direction: column
+   justify-content: center
+   align-items: center
+   min-height: 100%
+   width: 100%
+   text-align: center
+
+
+
+.btn_rock 
+  text-align: center
+  margin: 20px
+  width: 150px
+  height: 150px
+  background-image: url("./PRS/rock.svg")
+  background-repeat: no-repeat
+  background-color: unset
+  border-radius: 15px
+
+  &:hover
+
+.btn_paper 
+  margin: 20px
+  width: 150px
+  height: 150px
+  background-image: url("./PRS/toilet-paper.svg")
+  background-repeat: no-repeat
+  background-size: contain
+  background-color: unset
+  
+  &:hover
+
+
+.btn_sci 
+  margin: 20px
+  width: 150px
+  height: 150px
+  background-image: url("./PRS/scissors.svg")
+  background-repeat: no-repeat
+  background-color: unset
+
+  &:hover
+
+.waiting
+  animation: flicker 4s infinite
+
+  @keyframes flicker
+    0% 
+      opacity: 1
+    100% 
+      opacity: 0
+        

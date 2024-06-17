@@ -1,43 +1,57 @@
 <template>
-  <div class="h-screen flex flex-col items-center justify-center bg-slate-700">
+  
+  <GameLayout nameGame="Камінь Ножиці Бумага">
+  <div class="mainContainer">
 
-    <h2> Кімната: {{ room.name }} для {{ room.required_players }} гравців</h2>
-    <div >
-      <table class="steelBlueCols">
-        <thead>
-          <tr>
-            <th>Нікнейм</th>
-            <th>Бали</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="i in room.players" :key="i.id">
-            <td > {{ i.name }}</td>
-            <td > {{ i.score }}</td>
-          </tr>
-          
-        </tbody>
+    <div class="creatorInfo"> Кімнату створив {{ room.name }} для {{ room.required_players }}-x гравців</div>
+      <div  v-if="gameState === 'GameCanBeStart'">
+        <table class="formCreate">
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="i in room.players" :key="i.id" class="formElement">
+              <td class="tableElement"> {{ i.name }}</td>
+              <td class="tableElement"> {{ i.score }}</td>
+            </tr>
+            
+          </tbody>
         </table>
-    </div>
+      </div>
   <br>  
-  <div>
-    <a href="/connect/{{ room.id }}"> http://localhost:8080/connect/{{ room.id }}</a>
-    <br>  
-    <br>  
-    <br>
-    <qrcode-vue :value="qrCodeValue" :size="300" level="H" />
-  </div>
+    <div v-if="gameState === 'WaitPlayers'">
+    <!-- <a href='`https://t.me/share/url?url={ http://localhost:8080/connect/{{ room.id }}}&text={someText fejfhkwjfjwkefkgewkw}`'>23333333333333</a> -->
+      <div class="waiting">Очікуємо на гравців</div>
+      <br>  
+      <br>  
+      <br>
+      <a href="/connect/{{ room.id }}"> http://localhost:8080/connect/{{ room.id }}</a>
+      <br>  
+      <br>  
+      <br>
+      <qrcode-vue :value="qrCodeValue" :size="200" level="L" />
+    </div>
     
 
   <div v-if="gameState === 'GameCanBeStart'">
   <!-- <div> -->
 
-    <div>
-    </div>
-    <button @click="()=> sendPlayerChoiceToServer('rock')" class="btn_rock" value="rock"></button>
-    <button @click="()=> sendPlayerChoiceToServer('scissors')" class="btn_sci" value="scissor"></button>
-    <button @click="()=> sendPlayerChoiceToServer('paper')" class="btn_paper" value="paper"></button>
 
+  <van-cell title="Зробити вибір" is-link @click="showPopup" />
+  <van-popup v-model:show="show" :style="{ padding: '64px' }">
+    <div>Роби свій вибір </div>
+    <div class="groupButtonCont" v-if="choiseGet" >
+      <div><button @click="()=> sendPlayerChoiceToServer('rock')" class="btn_rock activeButton" value="rock"></button></div>
+      <div><button @click="()=> sendPlayerChoiceToServer('scissors')" class="btn_sci activeButton" value="scissor"></button></div>
+      <div><button @click="()=> sendPlayerChoiceToServer('paper')" class="btn_paper activeButton" value="paper"></button></div>
+    </div>
+  
+  </van-popup>
+    
+   
   </div>
     <!-- <div>
       {{ room.name }}
@@ -50,6 +64,7 @@
 
 
 </div>
+</GameLayout>
 </template>
 
 
@@ -57,15 +72,28 @@
 import {onBeforeMount, ref, reactive} from 'vue'
 import { useRoute } from 'vue-router';
 import QrcodeVue from 'qrcode.vue'
+import GameLayout from '../GameLayout.vue';
+
+
+
+
 
 const pName = localStorage.getItem('playerName')
 const route = useRoute()
-
+let choiseGet = ref(true)
 let currentState = ref('WaitPlayers');
 const room = reactive({
   name: "",
   players: [],
 })
+
+
+const show = ref(false);
+    const showPopup = () => {
+      show.value = true;
+    };
+
+
 
 const qrCodeValue = `http://localhost:8080/connect/${route.params.id}`
 
@@ -82,6 +110,9 @@ let gameState = ref("WaitPlayers");
 
 const sendPlayerChoiceToServer = (choice) => {
   websocket.send(choice)
+  choiseGet = false
+
+  
 }
 
 
@@ -96,10 +127,11 @@ websocket.onmessage = function (event){
   // TODO:
   if (eventType === "GameCanBeStart"){
     gameState.value = "GameCanBeStart"
-
+    showPopup()
     alert(gameState.value)
   }
   else if (["Win", "Draw", "Lose"].includes(eventType)){
+    choiseGet = true
     alert(eventType)
   }
   // TODO:
@@ -112,53 +144,21 @@ websocket.onmessage = function (event){
 </script>
 
 
-<style>
+<style lang="sass" scoped>
+
+.activeButton
 
 
+  &:hover
+    background-color: #334225
 
+.creatorInfo
+  font-size: 25px
 
-table.steelBlueCols {
-  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-  border: 10px solid #555555;
-  background-color: #555555;
-  width: 400px;
-  text-align: center;
-  border-collapse: collapse;
-}
-table.steelBlueCols td, table.steelBlueCols th {
-  border: 10px solid #555555;
-  padding: 5px 10px;
-}
-table.steelBlueCols tbody td {
-  font-size: 13px;
-  color: #FFFFFF;
-}
-table.steelBlueCols thead {
-  background: #398AA4;
-  border-bottom: 10px solid #398AA4;
-}
-table.steelBlueCols thead th {
-  font-size: 15px;
-  font-weight: normal;
-  color: #FFFFFF;
-  text-align: left;
-  border-left: 2px solid #398AA4;
-}
-table.steelBlueCols thead th:first-child {
-  border-left: none;
-}
+.tableElement
+  font-size: 40px
 
-table.steelBlueCols tfoot td {
-  font-size: 13px;
-}
-table.steelBlueCols tfoot .links {
-  text-align: right;
-}
-table.steelBlueCols tfoot .links a{
-  display: inline-block;
-  background: #FFFFFF;
-  color: #398AA4;
-  padding: 2px 8px;
-  border-radius: 5px;
-}
+.groupButtonCont
+  display: flex  
+  background-color: none
 </style>

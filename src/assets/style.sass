@@ -1,81 +1,106 @@
 
-$color-gradient: linear-gradient(to right, #DA22FF 0%, #9733EE  51%, #DA22FF  100%)
+$color-gradient: linear-gradient(to right, #DA22FF 0%, #9733EE 51%, #DA22FF 100%)
 $borderRadius: 40px
 $shadowBox: 0px 5px 10px 0px rgba(0, 0, 0, 0.3)
 
-*, *::before, *::after 
+*, *::before, *::after
   margin: 0
   padding: 0
   border: 0
   box-sizing: border-box
 
-
 h1, h2, h3, h4, a, button, input
   font-weight: inherit
   font-size: inherit
   font-family: "Shantell Sans", cursive
-  
+  color: #fff
 
+a
+  color: #fff
 
+button
+  color: #fff
 
-html, body  
+.foo
+  width: 200px
+  border: !important$borderRadius
+  background-color: !important$color-gradient
+  text-align: center
+
+.timer
+  color: #fff
+  font-size: 3em
+  padding: 40px
+
+.mainPage
+  font-size: 2em
+
+html, body
   height: 100%
   margin: 0
   padding: 0
-  font-weight:300
+  font-weight: 300
   font-family: "Shantell Sans", cursive
   font-weight: 300
-  color: white
+  color: #fff
   background: rgb(65,41,90)
   background: linear-gradient(90deg, rgba(65,41,90,1) 0%, rgba(47,7,67,1) 100%)
 
+input
 
-
-input 
-  
   background: transparent
   font-weight: 100
   outline: 0
+  color: #fff
+  padding-left: 30px
 
-.appContainer 
+.bold
+  font-weight: 400
+  font-size: 27px
+
+.appContainer
   position: absolut
   height: 100%
   width: 100%
 
+.menuFizi
+  font-size: 25px
+  background: $color-gradient
+  -webkit-background-clip: text
+  -webkit-text-fill-color: transparent
 
-.menuFizi 
-    font-size: 25px
-    background: $color-gradient
-    -webkit-background-clip: text
-    -webkit-text-fill-color: transparent
-  
 .btnDiv
   padding: 10px
 
-.btn-grad 
+.btn-grad
   width: 100%
   background-image: $color-gradient
   margin-top: 25px
   padding: 25px 45px
   text-align: center
   text-transform: uppercase
-  transition: 0.5s
+  // transition: 0.5s
   background-size: 200% auto
-  color: white           
+  color: white
   border-radius: $borderRadius
-  display: block
+  perspective: 1000px/* Добавим перспективу */
+  display: inline-block /* Добавим блоковое поведение для кнопки */
 
+  /* Анимация прокрутки фона */
+  animation: gradient-scroll 3s linear infinite
 
-.btn-grad:hover 
-  background-position: right center 
+.btn-grad:hover
+  background-position: right center
   color: #fff
   text-decoration: none
 
+.btn-gard:disabled
+  background-image: none
+  background-color: transparent
 
-
-.form_create 
+.form_create
   font-size: 30px
-  font-weight:100
+  font-weight: 100
 
 .containerFormCreate
   font-size: 18px
@@ -84,22 +109,35 @@ input
   text-align: left
 
 .formCreate
-  width: 500px
+  display: flex
+  flex-direction: column
+  justify-content: center
+  justify-items: center
+  align-items: center
+  width: 450px
   border: 1px solid rgba(255, 255, 255, 0.1)
-  padding: 40px 
+  padding: 40px
   margin-top: 35px
   box-shadow: $shadowBox
   border-radius: $borderRadius
 
-
-
 .formElement
+  width: 100%
   padding: 10px
   display: flex
   justify-content: space-between
   align-items: center
 
-.input-gradient 
+.formElement_tod
+  width: 50%
+  padding: 10px
+  display: flex
+  justify-content: space-around
+  align-items: center
+  text-align: center
+  align-content: center
+
+.input-gradient
   text-align: center
   width: 50%
   border-radius: $borderRadius
@@ -124,23 +162,17 @@ input
     border-style: solid
     border-image: $color-gradient 1
     border-radius: $borderRadius
-    
-
-
-
 
 .mainContainer
-   display: flex
-   flex-direction: column
-   justify-content: center
-   align-items: center
-   min-height: 100%
-   width: 100%
-   text-align: center
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+  min-height: 100%
+  width: 100%
+  text-align: center
 
-
-
-.btn_rock 
+.btn_rock
   text-align: center
   margin: 20px
   width: 150px
@@ -152,7 +184,7 @@ input
 
   &:hover
 
-.btn_paper 
+.btn_paper
   margin: 20px
   width: 150px
   height: 150px
@@ -160,11 +192,10 @@ input
   background-repeat: no-repeat
   background-size: contain
   background-color: unset
-  
+
   &:hover
 
-
-.btn_sci 
+.btn_sci
   margin: 20px
   width: 150px
   height: 150px
@@ -178,8 +209,16 @@ input
   animation: flicker 4s infinite
 
   @keyframes flicker
-    0% 
+    0%
       opacity: 1
-    100% 
+    100%
       opacity: 0
-        
+
+.name_button
+  // width: 150px
+  padding: 10px 20px
+  margin-bottom: 20px
+  font-size: 1.5rem
+  background-color: transparent
+  border-bottom: 1px solid
+  border-radius: 12px

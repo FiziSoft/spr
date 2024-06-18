@@ -7,13 +7,20 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ButtonAnimation: typeof import('./src/components/ButtonAnimation.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    VanBackTop: typeof import('vant/es')['BackTop']
+    ShareButton: typeof import('./src/components/ShareButton.vue')['default']
+    TelegramShareButton: typeof import('./src/components/TelegramShareButton.vue')['default']
+    TimerFizi: typeof import('./src/components/TimerFizi.vue')['default']
     VanButton: typeof import('vant/es')['Button']
     VanCell: typeof import('vant/es')['Cell']
-    VanNavBar: typeof import('vant/es')['NavBar']
+    VanCountDown: typeof import('vant/es')['CountDown']
+    VanDropdownItem: typeof import('vant/es')['DropdownItem']
+    VanDropdownMenu: typeof import('vant/es')['DropdownMenu']
+    VanGrid: typeof import('vant/es')['Grid']
+    VanGridItem: typeof import('vant/es')['GridItem']
     VanPopup: typeof import('vant/es')['Popup']
     VanShareSheet: typeof import('vant/es')['ShareSheet']
     VanTabbar: typeof import('vant/es')['Tabbar']

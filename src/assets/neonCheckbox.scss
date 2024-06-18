@@ -1,0 +1,62 @@
+
+
+.gender-selection {
+  display: flex;
+  gap: 20px;
+}
+
+.gender-label {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-size: cover;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  
+  &.male {
+    background-image: url('./TOD/male-icon.png'); // Путь к иконке мужчины
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.6);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    background-size: 75%;
+  }
+
+  &.female {
+    background-image: url('./TOD/female-icon.png'); // Путь к иконке женщины
+    box-shadow: 0 0 20px rgba(255, 0, 144, 0.8), 0 0 30px rgba(167, 28, 167, 0.6);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 35%;
+    
+  }
+}
+
+input[type="checkbox"] {
+  display: none;
+
+  &:checked + .gender-label {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.6);
+  
+  &:unchecked + .gender-label {
+      box-shadow: 0 0 20px rgba(255, 0, 144, 0.8), 0 0 30px rgba(167, 28, 167, 0.6);
+    }
+  }
+}
+
+// #female:checked + .female {
+//   box-shadow: none; /* Убираем неоновую подсветку для женской иконки */
+// }
+
+// #male:checked + .male {
+//   box-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.6);
+// }
+
+// #male:checked + .female {
+//   box-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.6);
+// }

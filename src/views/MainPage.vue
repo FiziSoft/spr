@@ -1,72 +1,47 @@
 <template>
 
+<div class="mainContainer mainPage">
+    <div>Main Page</div> 
 
-    <div>Main Page</div>
-<a href="http://localhost:8080/CreateRoom"><h1 class="">PRS - Create Game</h1></a>
+    <div  class="name_game">
+       <a :href="network_url+'/CreateRoom'"><h1 class=""><span>PRS GAME</span></h1></a>
+    </div>
+    <div  class="name_game">
+       <a :href="network_url+'/spy/CreateRoom'"><h1 class=""><span>SPYYYYYY GAME</span></h1></a>
+    </div>
+
+    <div  class="name_game">
+       <a :href="network_url+'/tod' "><h1 class=""><span>Правда або Дія</span></h1></a>
+    </div>
+
+
 <h5>PRS - Create Game</h5>
 
-<van-button loading type="success" loading-text="Loading..." />
+
 <br>
-<van-button color="linear-gradient(to right, #ff6034, #ee0a24)">
-  Gradient
-</van-button>
-<van-cell title="Show Popup" is-link @click="showPopup" />
 
-<van-button type="success">Success</van-button>
+<h2>{{ ti_me }}</h2>
 
 
-
-<van-cell title="&#9728;" @click="showShare = true" />
-<van-share-sheet
-  v-model:show="showShare"
-  title="Share"
-  :options="options"
-  @select="onSelect"
-/>
-
-<van-popup
-  v-model:show="showBottom"
-  position="bottom"
-  :style="{ height: '30%' }"
-/>
-
-
-<van-tabbar v-model="active">
-  <van-tabbar-item icon="home-o">Tab</van-tabbar-item>
-  <van-tabbar-item icon="search">Tab</van-tabbar-item>
-  
-  <van-tabbar-item icon="setting-o">Tab</van-tabbar-item>
-</van-tabbar>
-
+</div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { showToast } from 'vant';
 
+let ti_me = Date();
 
-const showBottom = ref(false);
-    const showPopup = () => {
-      showBottom.value = true;
-    };
+// const network_url = ref('http://192.168.0.105:8080')
+const network_url = ref('http://localhost:8080')
 
-const active = ref(0)
-
-const showShare = ref(false);
-    const options = [
-      { name: 'WeChat', icon: 'wechat' },
-      { name: 'Weibo', icon: 'weibo' },
-      { name: 'Link', icon: 'link' },
-      { name: 'Poster', icon: 'poster' },
-      { name: 'Qrcode', icon: 'qrcode' },
-    ];
-
-    const onSelect = (option) => {
-      showToast(option.name);
-      showShare.value = false;
-    };
 
 
 </script>
-<style>
+<style lang="sass">
+
+.name_game
+  border: 1px solid
+  padding: 20px
+  border-radius: 12px 
+  margin: 20px
 </style>

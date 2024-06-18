@@ -59,6 +59,7 @@ const sendCreateRoomRequest = async () => {
         params: {
           name: roomName,
           req_players: numPlayers.value
+         
         },
       }
   )

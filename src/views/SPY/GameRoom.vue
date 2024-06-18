@@ -1,25 +1,46 @@
 <template>
   
-  <GameLayout nameGame="Камінь Ножиці Бумага">
+  <GameLayout nameGame="Шпіон">
   <div class="mainContainer">
 
     <div class="creatorInfo"> Кімнату створив {{ room.name }} для {{ room.required_players }}-x гравців</div>
       <div  v-if="gameState === 'GameCanBeStart'">
+        <h2> {{ cur_world }}</h2>
         <table class="formCreate">
           <thead>
             <tr>
               <th></th>
-              <th></th>
+            
             </tr>
           </thead>
           <tbody>
             <tr v-for="i in room.players" :key="i.id" class="formElement">
               <td class="tableElement"> {{ i.name }}</td>
-              <td class="tableElement"> {{ i.score }}</td>
+              
             </tr>
             
           </tbody>
         </table>
+
+        <div class="spyDiv" v-if="isSpy === true">
+        <div>
+          <ul v-for="i in room.theme" :key="i.id">
+            <li>{{ i }}</li>
+          </ul>
+        </div>
+        
+        
+        </div>
+
+        <van-count-down class="timer"
+          ref="countDown"
+          millisecond
+          :time=time_game 
+          :auto-start="true"
+          format="mm:ss"
+          @finish="onFinish"
+        />
+
       </div>
   <br>  
     <div v-if="gameState === 'WaitPlayers'">
@@ -40,32 +61,11 @@
   <!-- <div> -->
 
 
-  <div>
-   
-  <van-cell title="Зробити вибір" is-link @click="showPopup" />
-  <van-popup v-model:show="show" :style="{ padding: '64px' }">
-    <div>Роби свій вибір </div>
-    <div class="groupButtonCont" v-if="choiseGet" >
-      <div><button @click="()=> sendPlayerChoiceToServer('rock')" class="btn_rock activeButton" value="rock"></button></div>
-      <div><button @click="()=> sendPlayerChoiceToServer('scissors')" class="btn_sci activeButton" value="scissor"></button></div>
-      <div><button @click="()=> sendPlayerChoiceToServer('paper')" class="btn_paper activeButton" value="paper"></button></div>
-    </div>
-  
-  </van-popup>
-  </div>
+{{eventType}}
     
    
   </div>
-    <!-- <div>
-      {{ room.name }}
-      {{ room.players.length }}
-    </div> -->
-
-    <!-- <div v-for="i in room.players" :key="i.id">
-      {{ i.name }}
-    </div> -->
-
-
+ 
 </div>
 </GameLayout>
 </template>
@@ -79,8 +79,8 @@ import GameLayout from '../GameLayout.vue';
 
 
 
-
-
+let isSpy = ref(false)
+let time_game = ref(0)
 const pName = localStorage.getItem('playerName')
 const route = useRoute()
 let choiseGet = ref(true)
@@ -118,6 +118,7 @@ const sendPlayerChoiceToServer = (choice) => {
   
 }
 
+let cur_world = ref("w")
 
 websocket.onmessage = function (event){
   const message = JSON.parse(event.data);
@@ -127,14 +128,22 @@ websocket.onmessage = function (event){
     localStorage.setItem("hash", message.hash)
   }
 
+  
   // TODO:
   if (eventType === "GameCanBeStart"){
     gameState.value = "GameCanBeStart"
-    showPopup()
-    alert(gameState.value)
+    cur_world = message.world_spy
+    console.log(message)
+    time_game = parseInt(message.room.time_game) * 60000
+    alert(time_game)
+    
+
   }
-  else if (["Win", "Draw", "Lose"].includes(eventType)){
-    choiseGet = true
+  else if (["you_spy"].includes(eventType)){
+    gameState.value = "GameCanBeStart"
+    time_game = parseInt(message.room.time_game) * 60000
+    choiseGet.value = true
+    isSpy.value =true
     alert(eventType)
   }
   // TODO:

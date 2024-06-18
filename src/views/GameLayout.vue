@@ -41,7 +41,7 @@ const props = defineProps({
     justify-content: center
 
     text-align: center
-    font-size: 60px
+    font-size: 40px
     font-weight: 100 
     height: 90px
 

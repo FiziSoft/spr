@@ -7,15 +7,3 @@ module.exports = defineConfig({
   transpileDependencies: true
 })
 
-module.exports = {
-  configureWebpack: {
-    plugins: [
-        // when the unplugin-vue-components version is greater than or equal to 0.26.0:
-      AutoImport.default({
-        imports: [VantImports()],
-        resolvers: [VantResolver()],
-      }),
-      Components.default({ resolvers: [VantResolver()] }),
-    ],
-  },
-};

@@ -30,13 +30,9 @@
 <GameLayout nameGame="Правда або Дія">
   <WebSocketComponent :name="cur_player.name" :body="share_info" :title="cur_title" :roomId="roomId" ref="websocketComponent" />
 
-    <nav>
-      <router-link to="/">Home</router-link>
-      <router-link to="/tod-view">TOD View</router-link>
-    </nav>
-    <router-view></router-view> <!-- Это для отображения маршрутов -->
-    <div>{{ tod_url_view }}</div>
-  <div class="container">
+    
+  <button @click="setOnView">ddddddddddddddddddddd</button>
+    <div class="container">
    
     
     <!-- <input v-if="isVisible('button3')" v-model.number="rotationDuration" type="number" placeholder="Время вращения (сек)" /> -->
@@ -51,7 +47,7 @@
         <div class="nameCurPlayer">  <h1>{{ cur_player.name }}</h1></div>
           <transition name="fade" >
         
-          <button v-if="isVisible('button1')" ref="button1" v-show="truth_div===true" @click="go_truths()" class="btn-grad">Правда</button>
+          <button v-if="isVisible('button1')" ref="button1" v-show="truth_div===true" @click="go_truths(), setOnView()" class="btn-grad">Правда</button>
       </transition>
       <transition name="fade">
         <button v-if="isVisible('button2')" ref="button2"  v-show="dares_div===true" @click="go_dares()" class="btn-grad">Дія</button>
@@ -91,7 +87,7 @@
         </div>
 
     </div>
-    <ShareButton @share="handleShare"  :url="tod_url_view"  :text= "text_share"/>
+    <!-- <ShareButton @share="handleShare"  :url="tod_url_view"  :text= "text_share"/> -->
     <!-- <ButtonAnimation /> -->
 
     
@@ -109,7 +105,7 @@
 <script setup>
 import GameLayout from '../GameLayout.vue';
 
-import {onMounted, ref, toRefs, watch, onUnmounted, computed} from 'vue'
+import {onMounted, ref, toRefs, watch, onUnmounted, computed, watchEffect } from 'vue'
 
 import gsap from 'gsap';
 
@@ -118,7 +114,7 @@ import TimerFizi from '@/components/TimerFizi.vue';
 import TelegramShareButton  from '@/components/TelegramShareButton.vue'; // Путь к компоненту
 import ShareButton  from '@/components/ShareButton.vue'; // Путь к компоненту
 import WebSocketComponent  from '@/components/WebSocketComponent.vue'; // Путь к компоненту
-
+import { useRoute } from 'vue-router';
 
 
 
@@ -246,31 +242,24 @@ let cur_player = ref(cur_players[0])
 let pre_player = ref(cur_players[count_players.value-1])
 let actual_name = ref('')
 
+const share_info = ref('');
+const cur_title = ref('');
 
-const tod_url_view = ref(localStorage.getItem('tod_url_view'))
-let url_actual = ref('')
-
-onMounted(() => {
-
-  url_actual = toRefs(tod_url_view)
-
-})
+// const ffff =  computed(() =>{ return websocketComponent.value.todViewLink});
 
 
-let share_info = ref('')
-let cur_title = ref('')
-const text_share = 'Найкращі онлайн настільні ігри Fizi Games'
+
+
+
+
+
+ 
+
+
+
+
 
 const get_cur_players = (index) => {cur_player.value = cur_players[index]}
-
-const websocketComponent = ref(null)
-
-const triggerSendMessage = () => {
-  if (websocketComponent.value && websocketComponent.value.sendButton) {
-    websocketComponent.value.sendButton.click() // Имитация нажатия кнопки
-  }
-}
-
 
 const next_round=onMounted(()=>{
   get_cur_players(count_players.value)
@@ -289,13 +278,49 @@ const next_round=onMounted(()=>{
 })
 
 
-const sendMessageOnRoom = onMounted(()=>{
-  triggerSendMessage()
+
+function useSendMessageOnRoom(title, body) {
+  // Наблюдаем за изменениями в title и body
+  watchEffect(() => {
+    // Обновляем значения
+    cur_title.value = title;
+    share_info.value = body;  
+
+    // Отправляем сообщение
+    triggerSendMessage();
+    
+  });
+  stop()
+}
+
+const websocketComponent = ref(null);
+
+
+
+const triggerSendMessage = () => {
+  if (websocketComponent.value) {
+    websocketComponent.value.sendMessage(); // Вызов метода sendMessage внутри компонента WebSocketComponent
+  }
+};
+
+let sendButton = null;
+
+const setOnView = onMounted(()=>{
+  sendButton = document.getElementById('sendButton');
+  if (sendButton) {
+    console.log('Кнопка найдена:', sendButton);
+    sendButton.dispatchEvent(new Event('click'));
+  } else {
+    console.log('Кнопка не найдена');
+  }
 })
+
+
+const get_cur_truth = (index) => {share_info.value = truths[index].question}
 
 // Правда и действие формируются закдром и флагами их можно показывать
 
-const go_truths = () =>{
+const go_truths = onMounted(() =>{
    
     cur_truth.value = get_truth()
 
@@ -310,11 +335,17 @@ const go_truths = () =>{
     dares_div.value= false
 
     cur_title.value = "Правда"
-    share_info.value = cur_truth.value.question
-  
-    triggerSendMessage()
+    share_info.value = truths[count_truth.value].question
+    // get_cur_truth(count_truth.value)
+    // onMounted(triggerSendMessage());
+
+    // useSendMessageOnRoom("Правда", this.cur_truth.value.question)
    
-}
+    setOnView()
+     
+    
+
+})
 
 
 
@@ -343,9 +374,13 @@ const go_dares = () =>{
     truth_div.value= false
     dares_div.value= true
 
+
+
     cur_title.value = "Дія"
-    share_info.value = cur_dare.value.question
-    sendMessageOnRoom()
+    share_info.value = dares[count_dares.value].task
+
+    setOnView()
+    
   }
 
 function get_dares(){

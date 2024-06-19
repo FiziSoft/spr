@@ -1,11 +1,17 @@
 <template>
   <div>
-    <button @click="sendMessage" ref="sendButton">Отправить сообщение</button>
+    <button @click="sendMessage" ref="sendButton" id="sendButton">Отправить сообщение</button>
+    <ShareButton @share="handleShare" :url="todViewLink" text="Слідкуй за грою онлайн"/>
   </div>
+
+  
+
 </template>
 
 <script setup>
-import { ref, onMounted, defineExpose, defineProps } from 'vue';
+import { ref, onMounted, defineExpose, defineProps, watch } from 'vue';
+import ShareButton from '@/components/ShareButton.vue';
+
 
 const props = defineProps({
   name: {
@@ -23,6 +29,10 @@ const props = defineProps({
   initialRoomId: {
     type: String,
     required: false
+  },
+  todUrlView: {
+    type: String,
+    required: true
   }
 });
 
@@ -30,7 +40,7 @@ const isConnected = ref(false);
 const socket = ref(null);
 const roomId = ref(props.initialRoomId || null);
 const roomUrl = ref(null);
-const todViewLink = ref(localStorage.getItem('tod_url_view') || ''); // Используем localStorage напрямую
+const todViewLink = ref(props.todUrlView);
 
 const sendButton = ref(null);
 
@@ -73,8 +83,10 @@ const createRoom = async () => {
     const data = await response.json();
     roomId.value = data.room_id;
     roomUrl.value = data.room_url;
-    todViewLink.value = `http://localhost:8080/tod-view/${roomId.value}`; // Обновляем todViewLink
-    localStorage.setItem('tod_url_view', todViewLink.value); // Сохраняем в localStorage
+    localStorage.setItem('tod_room_id', roomId.value); // Сохранение roomId в localStorage
+    todViewLink.value = `http://localhost:8080/tod-view/${roomId.value}`;
+    localStorage.setItem('tod_url_view', todViewLink.value);
+    window.dispatchEvent(new Event('storage')); // Событие для обновления данных в основном компоненте
     setupSocket(data.room_url);
   } catch (error) {
     console.error('Error creating room:', error);
@@ -87,6 +99,11 @@ onMounted(() => {
   } else {
     setupSocket(`ws://localhost:8001/ws/${roomId.value}`);
   }
+});
+
+watch(todViewLink, (newValue) => {
+  localStorage.setItem('tod_url_view', newValue);
+  window.dispatchEvent(new Event('storage'));
 });
 
 defineExpose({ sendMessage, sendButton, roomId, roomUrl, todViewLink });

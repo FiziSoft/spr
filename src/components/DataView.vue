@@ -1,7 +1,6 @@
 <template>
   <GameLayout nameGame="Правда або Дія">
     <div class="containerFormCreate">
-      
       <div v-if="receivedData" class="formCreate">
         <div class="name_button">{{ receivedData.title }}</div>
         <div><p>{{ receivedData.name }}</p></div>
@@ -10,8 +9,7 @@
       <pre v-else>No data received yet</pre>
     </div>
     <ShareButton @share="handleShare" :url="todViewLink" text="Слідкуй за грою онлайн"/>
-   
-   
+    
   </GameLayout>
 </template>
 
@@ -20,20 +18,11 @@ import { ref, onMounted, watch, defineExpose } from 'vue';
 import { useRoute } from 'vue-router';
 import ShareButton from '@/components/ShareButton.vue';
 import GameLayout from '@/views/GameLayout.vue';
-import WebSocketComponent from '@/components/WebSocketComponent.vue';
 
 const receivedData = ref(null);
-const websocketComponent = ref(null);
 const route = useRoute();
-const roomId = ref(route.params.roomId || localStorage.getItem('room_id'));
+const roomId = ref(route.params.roomId || localStorage.getItem('tod_room_id'));
 const todViewLink = ref(localStorage.getItem('tod_url_view') || '');
-
-const cur_player = ref({
-  name: "Player",
-  // Add default properties to avoid undefined errors
-});
-const share_info = ref("Default body content");
-const cur_title = ref("Default title");
 
 const setupSocket = (roomId) => {
   const socket = new WebSocket(`ws://localhost:8001/ws/${roomId}`);
@@ -52,14 +41,6 @@ const setupSocket = (roomId) => {
   });
 };
 
-const triggerSendMessage = () => {
-  if (websocketComponent.value) {
-    websocketComponent.value.sendMessage();
-  } else {
-    console.error('WebSocketComponent не найден.');
-  }
-};
-
 onMounted(() => {
   if (roomId.value) {
     setupSocket(roomId.value);
@@ -75,5 +56,5 @@ watch(roomId, (newRoomId) => {
   }
 });
 
-defineExpose({ triggerSendMessage, roomId, todViewLink });
+defineExpose({ roomId, todViewLink });
 </script>

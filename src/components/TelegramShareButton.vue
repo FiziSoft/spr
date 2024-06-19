@@ -15,6 +15,7 @@
       <button @click="shareToTelegram" class="share-button telegram">
         <img src="@/assets/telegram.png" alt="Telegram" class="icon"/>
       </button>
+      <a class="a_" :href="props.url" target="_blank">{{ props.url }}</a>  
     </div>
   </template>
   
@@ -51,6 +52,11 @@
   </script>
   
   <style scoped>
+  .a_ {
+    color: black;
+  }
+
+
   .share-buttons {
     display: flex;
     flex-direction: column;

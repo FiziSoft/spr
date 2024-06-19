@@ -1,176 +1,132 @@
 <template>
-  
   <GameLayout nameGame="Шпіон">
-  <div class="mainContainer">
-
-    <div class="creatorInfo"> Кімнату створив {{ room.name }} для {{ room.required_players }}-x гравців</div>
-      <div  v-if="gameState === 'GameCanBeStart'">
-        <h2> {{ cur_world }}</h2>
+    <div class="mainContainer">
+      <div class="creatorInfo"> Кімнату створив {{ room.name }} для {{ room.required_players }}-x гравців</div>
+      
+      <div v-if="gameState === 'GameCanBeStart'">
+        <h2>{{ cur_world }}</h2>
         <table class="formCreate">
           <thead>
             <tr>
-              <th></th>
-            
+              <th>Гравці</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="i in room.players" :key="i.id" class="formElement">
-              <td class="tableElement"> {{ i.name }}</td>
-              
+              <td class="tableElement">{{ i.name }}</td>
             </tr>
-            
           </tbody>
         </table>
 
-        <div class="spyDiv" v-if="isSpy === true">
-        <div>
-          <ul v-for="i in room.theme" :key="i.id">
-            <li>{{ i }}</li>
-          </ul>
-        </div>
-        
-        
-        </div>
+        <TimerFizi :timeInSeconds="time_game" />
 
-        <van-count-down class="timer"
-          ref="countDown"
-          millisecond
-          :time=time_game 
-          :auto-start="true"
-          format="mm:ss"
-          @finish="onFinish"
-        />
-
+        <div class="spyDiv" v-if="isSpy">
+          <div>
+            <ul v-for="i in all_words" :key="i">
+              <li>{{ i }}</li>
+            </ul>
+          </div>
+        </div>
       </div>
-  <br>  
-    <div v-if="gameState === 'WaitPlayers'">
-    <!-- <a href='`https://t.me/share/url?url={ http://localhost:8080/connect/{{ room.id }}}&text={someText fejfhkwjfjwkefkgewkw}`'>23333333333333</a> -->
-      <div class="waiting">Очікуємо на гравців</div>
-      <br>  
-      <br>  
-      <br>
-      <a href="/connect/{{ room.id }}"> http://localhost:8080/connect/{{ room.id }}</a>
-      <br>  
-      <br>  
-      <br>
-      <qrcode-vue :value="qrCodeValue" :size="200" level="L" />
+
+      <div v-if="gameState === 'WaitPlayers'">
+        <div class="waiting">Очікуємо на гравців</div>
+        <TelegramShareButton :url="qrCodeValue" text="Давай грати в Шпіона" />
+      </div>
     </div>
-    
-
-  <div v-if="gameState === 'GameCanBeStart'">
-  <!-- <div> -->
-
-
-{{eventType}}
-    
-   
-  </div>
- 
-</div>
-</GameLayout>
+  </GameLayout>
 </template>
 
-
 <script setup>
-import {onBeforeMount, ref, reactive} from 'vue'
+import { ref, reactive, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router';
-import QrcodeVue from 'qrcode.vue'
 import GameLayout from '../GameLayout.vue';
+import TelegramShareButton from '@/components/TelegramShareButton.vue';
+import TimerFizi from '@/components/TimerFizi.vue';
 
-
-
-let isSpy = ref(false)
-let time_game = ref(0)
+const isSpy = ref(false)
+const time_game = ref(0)
 const pName = localStorage.getItem('playerName')
 const route = useRoute()
-let choiseGet = ref(true)
-let currentState = ref('WaitPlayers');
+const gameState = ref('WaitPlayers')
+const cur_world = ref('w')
+const all_words = ref([])
 const room = reactive({
   name: "",
   players: [],
 })
-
-
-const show = ref(false);
-    const showPopup = () => {
-      show.value = true;
-    };
-
-
-
 const qrCodeValue = `http://localhost:8080/connect/${route.params.id}`
-
 const userHash = localStorage.getItem("hash")
-let websocket;
+let websocket
 
-if (userHash){
-  websocket = new WebSocket(`ws://127.0.0.1:7000/start/${route.params.id}?name=${pName}&player_hash=${userHash}`);
-} else {
-  websocket = new WebSocket(`ws://127.0.0.1:7000/start/${route.params.id}?name=${pName}`);
-}
-
-let gameState = ref("WaitPlayers");
-
-const sendPlayerChoiceToServer = (choice) => {
-  websocket.send(choice)
-  show.value = false
-
-  
-}
-
-let cur_world = ref("w")
-
-websocket.onmessage = function (event){
-  const message = JSON.parse(event.data);
-
-  const eventType = message.event;
-  if (message.hash){
-    localStorage.setItem("hash", message.hash)
+const initializeWebSocket = () => {
+  if (userHash) {
+    websocket = new WebSocket(`ws://127.0.0.1:7000/start/${route.params.id}?name=${pName}&player_hash=${userHash}`)
+  } else {
+    websocket = new WebSocket(`ws://127.0.0.1:7000/start/${route.params.id}?name=${pName}`)
   }
 
-  
-  // TODO:
-  if (eventType === "GameCanBeStart"){
-    gameState.value = "GameCanBeStart"
-    cur_world = message.world_spy
-    console.log(message)
-    time_game = parseInt(message.room.time_game) * 60000
-    alert(time_game)
-    
-
+  websocket.onopen = () => {
+    console.log('WebSocket connected')
   }
-  else if (["you_spy"].includes(eventType)){
-    gameState.value = "GameCanBeStart"
-    time_game = parseInt(message.room.time_game) * 60000
-    choiseGet.value = true
-    isSpy.value =true
-    alert(eventType)
-  }
-  // TODO:
-  // else if (eventType == "BBB"){doBBB}
 
-  Object.assign(room, message["room"])  /// что єто?
+  websocket.onmessage = function (event) {
+    const message = JSON.parse(event.data)
+    console.log('Received message:', message)
+    const eventType = message.event
+    if (message.hash) {
+      localStorage.setItem("hash", message.hash)
+    }
+
+    if (eventType === "GameCanBeStart") {
+      gameState.value = "GameCanBeStart"
+      cur_world.value = message.world_spy
+      time_game.value = parseInt(message.room.time_game) * 60
+      console.log('Game started:', message)
+    } else if (eventType === "YouAreSpy") {
+      gameState.value = "GameCanBeStart"
+      time_game.value = parseInt(message.room.time_game) * 60
+      isSpy.value = true
+      all_words.value = message.all_words
+      console.log('You are the spy:', message)
+    } else if (eventType === "ConnectedToRoom" || eventType === "NewPlayerConnected") {
+      Object.assign(room, message.room)
+      if (room.players.length >= room.required_players) {
+        gameState.value = "GameCanBeStart"
+      }
+      console.log('Room updated:', room)
+    }
+  }
+
+  websocket.onclose = (event) => {
+    console.log('WebSocket closed:', event)
+  }
+
+  websocket.onerror = (error) => {
+    console.error('WebSocket error:', error)
+  }
 }
 
-
+onBeforeMount(() => {
+  initializeWebSocket()
+})
 </script>
 
+<style scoped>
+.creatorInfo {
+  font-size: 25px;
+}
 
-<style lang="sass" scoped>
+.tableElement {
+  font-size: 40px;
+}
 
-.activeButton
+.groupButtonCont {
+  display: flex;
+  background-color: none;
+}
 
-
-  &:hover
-    background-color: #334225
-
-.creatorInfo
-  font-size: 25px
-
-.tableElement
-  font-size: 40px
-
-.groupButtonCont
-  display: flex  
-  background-color: none
+.spyDiv {
+  margin-top: 20px;
+}
 </style>

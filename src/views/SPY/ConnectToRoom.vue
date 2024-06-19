@@ -1,59 +1,61 @@
 <template>
-
-<GameLayout nameGame="Камінь Ножиці Бумага">
-<div class="containerFormCreate">
-  <form class="formCreate">
-
-
-    <div class="formElement">
-            
-      <label class="btn-gradient-1" for="">Ваше ім'я:</label>
-      <input v-model="playerName" type="text" id="" class="input-gradient">
-              
+  <GameLayout nameGame="Камінь Ножиці Бумага">
+    <div class="containerFormCreate">
+      <form class="formCreate">
+        <div class="formElement">
+          <label class="btn-gradient-1" for="">Ваше ім'я:</label>
+          <input v-model="playerName" type="text" id="" class="input-gradient">
+        </div>
+        <div class="btnDiv">
+          <button :disabled="!isButtonActive" type="button" @click="redirectToRoomPage" class="btn-grad"> Долучитись до гри </button>
+        </div>
+        <div v-if="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
+      </form>
     </div>
+  </GameLayout>
+</template>
 
-     
-    
-  
-  
-  <div class="btnDiv">
-        <button :disabled="!isButtonActive" type="button" @click="redirectToRoomPage" class="btn-grad"> Долучитись до гри </button>
-  </div>
-  </form>
- 
-  
+<script setup>
+import axios from "axios";
+import { ref, computed } from "vue";
+import { useRouter, useRoute } from 'vue-router';
 
-</div>
-</GameLayout>
-    
-    
-      
-    </template>
-    
-    <script setup>
-    
-    import axios from "axios";
-    import {ref, computed} from "vue";
-    import {router} from "../../router.js"
-    
-    import { useRoute } from 'vue-router';
+const router = useRouter();
+const route = useRoute();
+const playerName = ref(localStorage.getItem('playerName') || '');
+const errorMessage = ref('');
+const isButtonActive = computed(() => {
+  return playerName.value.trim().length > 0;
+});
 
-    const route = useRoute()
+const redirectToRoomPage = async () => {
+  try {
+    const roomId = route.params.id;
+    const encodedName = encodeURIComponent(playerName.value);
+    localStorage.setItem('playerName', playerName.value);
 
-    
-    const playerName = ref(localStorage.getItem('playerName'))
-   
-    const isButtonActive = computed(()=>{
-      return playerName.value 
-    })
-    
-    const redirectToRoomPage = async () => {
-      const roomId = route.params.id
-      localStorage.setItem('playerName', playerName.value )
-      router.push({name: 'spyGameRoom', params:{id:roomId}})
+    // Проверяем, существует ли комната
+    const response = await axios.get(`http://127.0.0.1:7000/rooms/${roomId}`);
+    if (response.status === 200 && response.data) {
+      // Комната существует, подключаемся к ней
+      router.push({ name: 'spyGameRoom', params: { id: roomId } });
     }
-    </script>
-    
-    <style>
-    
-    </style>
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      errorMessage.value = "Комната не существует. Пожалуйста, проверьте ID комнаты и попробуйте снова.";
+    } else {
+      console.error('Error checking room:', error);
+      errorMessage.value = "Произошла ошибка. Пожалуйста, попробуйте снова позже.";
+    }
+  }
+};
+</script>
+
+<style scoped>
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+</style>

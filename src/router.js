@@ -39,8 +39,9 @@ const routes = [
 
     {
         path: '/spy/room/:id',
-        name: "spyGameRoom",
-        component: spyGameRoom
+        name: 'spyGameRoom',
+        component: spyGameRoom,
+        props: true // Разрешить передачу параметров как свойства компонента
     },
 
     {

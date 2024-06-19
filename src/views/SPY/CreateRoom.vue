@@ -1,133 +1,82 @@
 <template>
-<GameLayout nameGame="Шпіон">
-<div class="containerFormCreate">
-  <form class="formCreate">
-
-
-    <div class="formElement">
-            
-      <label class="btn-gradient-1" for="">Ваше ім'я:</label>
-      <input v-model="playerName" type="text" id="" class="input-gradient">
-              
-    </div>
-
-  <div class="formElement">
-    <label class="">
-        Кількість гравців:
-    </label>
-    <input v-model="numPlayers"
-      class="input-gradient"
-      placeholder=" " />
-      
-    
-  </div>
-  
-
-  <div class="formElement">
-            
-    <label class="btn-gradient-1" for="">Time game:</label>
-    <input v-model="time_game" type="text" id="" class="input-gradient">
-                    
-  </div>
-
-  <div class="formElement">
-            
-            <label class="btn-gradient-1" for="">Вибрати тему:</label>
-            <van-dropdown-menu  class="foo">
-              <van-dropdown-item v-model="themes" :options="themes.value" :label="themes.value"/>
-            </van-dropdown-menu>
-                            
-  </div>
-  
-        <!-- <div>
-          <select v-model="theme_str">
-            <option  v-for="(theme, i) in themes" v-bind:key="i" value = {{ theme }} >{{ theme }}</option>
-          </select>
+  <GameLayout nameGame="Шпіон">
+    <div class="containerFormCreate">
+      <form class="formCreate">
+        <div class="formElement">
+          <label class="btn-gradient-1" for="playerName">Ваше ім'я:</label>
+          <input v-model="playerName" type="text" id="playerName" class="input-gradient">
         </div>
-           -->
-    <div>
-      <select v-model="theme_str">
-        <option selected disabled value="">Choose</option>
-        <option v-for="(result, index) in themes" v-bind:key="index" :value="result">{{ result }}</option>
-      </select>
-      
+
+        <div class="formElement">
+          <label class="btn-gradient-1" for="numPlayers">Кількість гравців:</label>
+          <input v-model="numPlayers" type="number" id="numPlayers" class="input-gradient">
+        </div>
+
+        <div class="formElement">
+          <label class="btn-gradient-1" for="timeGame">Час на гру:</label>
+          <input v-model="timeGame" type="number" id="timeGame" class="input-gradient">
+        </div>
+
+        <div class="formElement">
+          <Dropdown_my :items="themes" v-model="themeStr" label="Тема гри:" />
+        </div>
+
+        <div class="btnDiv">
+          <button :disabled="!isFormValid" type="button" @click="createRoom" class="btn-grad">Почати гру</button>
+        </div>
+      </form>
     </div>
-  <div class="btnDiv">
-        <button :disabled="!isButtonActive" type="button" @click="sendCreateRoomRequest" class="btn-grad"> Почати гру </button>
-  </div>
-    </form>
- 
-  
-
-</div>
-</GameLayout>
-
-
-  
+  </GameLayout>
 </template>
 
 <script setup>
+import axios from 'axios';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import GameLayout from '../GameLayout.vue';
+import Dropdown_my from '/src/components/Dropdown_my.vue';
 
-import axios from "axios";
-import {ref, computed, onMounted} from "vue";
-import {router} from "../../router.js";
-import GameLayout from "../GameLayout.vue";
+const router = useRouter();
 
-const playerName = ref(localStorage.getItem('playerName'))
-const roomName = playerName.value;
+const playerName = ref(localStorage.getItem('playerName') || '');
 const numPlayers = ref(null);
-const time_game = ref(null)
-const theme_str = ref(null)
+const timeGame = ref(null);
+const themeStr = ref(null);
+const themes = ref([]);
 
-const value2 = ref('');
-const option2 = [
-      { text: 'тематика', value: '' },
-      { text: 'Option B', value: 'b' },
-      { text: 'Option C', value: 'c' },
-    ];
+const fetchThemes = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:7000/getThemes');
+    themes.value = response.data;
+  } catch (error) {
+    console.error('Error fetching themes:', error);
+  }
+};
 
-const themes = ref([])
+onMounted(fetchThemes);
 
-const getPosts=()=>{
-  return axios.get("http://127.0.0.1:7000/getThemes")
-    .then((res)=>themes.value=res.data)
-    .catch((error)=>console.log(error))
-}
+const isFormValid = computed(() => playerName.value && numPlayers.value && timeGame.value && themeStr.value);
 
-
-onMounted(()=>{
-  getPosts();
-  
-})
-
-
-
-
-const isButtonActive = computed(()=>{
-  return playerName.value &&  numPlayers.value && time_game.value && theme_str.value
-})
-
-const sendCreateRoomRequest = async () => {
-  const response = await axios.post(
-      "http://127.0.0.1:7000/create_room",
-      null,
-      {
-        params: {
-          name: roomName,
-          req_players: numPlayers.value,
-          time_game: time_game.value,
-          theme_str: theme_str.value
-        },
+const createRoom = async () => {
+  try {
+    const response = await axios.post('http://127.0.0.1:7000/create_room', null, {
+      params: {
+        name: playerName.value,
+        req_players: numPlayers.value,
+        time_game: timeGame.value,
+        theme_str: themeStr.value
       }
-  )
-  
-  
-  const roomId = response.data.id 
-  localStorage.setItem('playerName', playerName.value )
-  router.push({name: 'spyGameRoom', params:{id:roomId}})
-}
+    });
+
+    const roomId = response.data.id;
+    localStorage.setItem('playerName', playerName.value);
+    router.push({ name: 'spyGameRoom', params: { id: roomId } });
+  } catch (error) {
+    console.error('Error creating room:', error);
+  }
+};
 </script>
 
-<style>
-
+<style scoped>
+/* Добавьте ваши стили здесь */
 </style>

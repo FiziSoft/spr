@@ -12,7 +12,7 @@
         </div>
         <div class="formElement">
           <label class="btn-gradient-1" for="time_game">Час на гру:</label>
-          <input v-model="time_game" type="number" id="time_game" class="input-gradient">
+          <input v-model="time_game" type="text" id="time_game" class="input-gradient">
         </div>
         <div class="formElement">
           <Dropdown_my :items="themes" v-model="theme_str" label="Тема гри:" />
@@ -28,7 +28,7 @@
   </GameLayout>
 </template>
 
-<script setup>
+<script setup charset="utf-8">
 import axios from "axios";
 import { ref, reactive, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
@@ -36,10 +36,12 @@ import GameLayout from "../GameLayout.vue";
 import Dropdown_my from "/src/components/Dropdown_my.vue";
 import TimerFizi from '@/components/TimerFizi.vue';
 import TelegramShareButton from '@/components/TelegramShareButton.vue';
+import network_url from "@/views/MainPage.vue"
+
 
 const router = useRouter();
 const route = useRoute();
-const playerName = ref(localStorage.getItem('playerName') || '');
+const playerName = ref(localStorage.getItem('spyPlayerName') || '');
 const numPlayers = ref(null);
 const time_game = ref(null);
 const theme_str = ref(null);
@@ -51,10 +53,11 @@ const cur_world = ref('');
 const room = reactive({ name: '', players: [], theme: [] });
 const loading = ref(true);
 const qrCodeValue = ref('');
+const url_serv = "127.0.0.1:7000"
 
 const getThemes = async () => {
   try {
-    const res = await axios.get("http://127.0.0.1:7000/getThemes");
+    const res = await axios.get(`http://${url_serv}/getThemes`);
     themes.value = res.data;
   } catch (error) {
     console.log('Error fetching themes:', error);
@@ -71,7 +74,7 @@ const isButtonActive = computed(() => {
 
 const checkRoomExists = async (roomId) => {
   try {
-    const response = await axios.get(`http://127.0.0.1:7000/rooms/${roomId}`);
+    const response = await axios.get(`http://${url_serv}/rooms/${roomId}`);
     return response.status === 200 && response.data;
   } catch (error) {
     if (error.response && error.response.status === 404) {
@@ -85,7 +88,7 @@ const checkRoomExists = async (roomId) => {
 };
 
 const connectToWebSocket = (roomId, playerName, playerHash) => {
-  const websocket = new WebSocket(`ws://127.0.0.1:7000/start/${roomId}?name=${encodeURIComponent(playerName)}&player_hash=${playerHash || ''}`);
+  const websocket = new WebSocket(`ws://${url_serv}/start/${roomId}?name=${encodeURIComponent(playerName)}&player_hash=${playerHash || ''}`);
 
   websocket.onopen = () => {
     console.log('WebSocket connected');
@@ -125,22 +128,24 @@ const connectToWebSocket = (roomId, playerName, playerHash) => {
 const sendCreateRoomRequest = async () => {
   try {
     const roomName = playerName.value;
+    const encodedThemeStr = encodeURIComponent(theme_str.value); // Кодируем строку
+
     console.log('Creating room with params:', {
       name: roomName,
       req_players: numPlayers.value,
       time_game: time_game.value,
-      theme_str: theme_str.value
+      theme_str: encodedThemeStr
     });
 
     const response = await axios.post(
-      "http://127.0.0.1:7000/create_room",
+      `http://${url_serv}/create_room`,
       null,
       {
         params: {
           name: roomName,
           req_players: numPlayers.value,
           time_game: time_game.value,
-          theme_str: theme_str.value
+          theme_str: encodedThemeStr // Используем закодированную строку
         },
       }
     );
@@ -158,10 +163,14 @@ const sendCreateRoomRequest = async () => {
   }
 };
 
+
 onMounted(async () => {
   const playerNameFromStorage = localStorage.getItem('spyPlayerName');
   const roomId = route.params.id;
   const playerHash = localStorage.getItem('spyPlayerHash');
+  localStorage.removeItem('spyTimerTimeLeft');
+  localStorage.removeItem('spyIsRunning');
+
 
   if (!playerNameFromStorage || !roomId) {
     return;
@@ -170,7 +179,7 @@ onMounted(async () => {
   const exists = await checkRoomExists(roomId);
   if (exists) {
     playerName.value = playerNameFromStorage;
-    qrCodeValue.value = `http://localhost:8080/spy/room/${roomId}`;
+    qrCodeValue.value = `${network_url}/spy/room/${roomId}`;
     connectToWebSocket(roomId, playerNameFromStorage, playerHash);
   } else {
     router.push('/');

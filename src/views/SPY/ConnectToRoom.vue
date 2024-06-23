@@ -3,8 +3,8 @@
     <div class="containerFormCreate">
       <form class="formCreate">
         <div class="formElement">
-          <label class="btn-gradient-1" for="">Ваше ім'я:</label>
-          <input v-model="playerName" type="text" id="" class="input-gradient">
+          <label class="btn-gradient-1" for="playerName">Ваше ім'я:</label>
+          <input v-model="playerName" type="text" id="playerName" class="input-gradient">
         </div>
         <div class="btnDiv">
           <button :disabled="!isButtonActive" type="button" @click="redirectToRoomPage" class="btn-grad"> Долучитись до гри </button>
@@ -24,7 +24,7 @@ import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
-const playerName = ref(localStorage.getItem('playerName') || '');
+const playerName = ref(localStorage.getItem('spyPlayerName') || '');
 const errorMessage = ref('');
 const isButtonActive = computed(() => {
   return playerName.value.trim().length > 0;
@@ -34,7 +34,7 @@ const redirectToRoomPage = async () => {
   try {
     const roomId = route.params.id;
     const encodedName = encodeURIComponent(playerName.value);
-    localStorage.setItem('playerName', playerName.value);
+    localStorage.setItem('spyPlayerName', playerName.value);
 
     // Проверяем, существует ли комната
     const response = await axios.get(`http://127.0.0.1:7000/rooms/${roomId}`);

@@ -40,6 +40,7 @@ const redirectToRoomPage = async () => {
     const response = await axios.get(`http://127.0.0.1:7000/rooms/${roomId}`);
     if (response.status === 200 && response.data) {
       // Комната существует, подключаемся к ней
+      localStorage.setItem('spyRoomId', roomId);
       router.push({ name: 'spyGameRoom', params: { id: roomId } });
     }
   } catch (error) {

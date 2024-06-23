@@ -11,7 +11,7 @@
 <script setup>
 import { ref, onMounted, defineExpose, defineProps, watch } from 'vue';
 import ShareButton from '@/components/ShareButton.vue';
-
+import network_url from '@/views/MainPage.vue'
 
 const props = defineProps({
   name: {

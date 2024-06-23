@@ -4,9 +4,9 @@ import CreateRoom from './views/PRS/CreateRoom.vue'
 import GameRoom from './views/PRS/GameRoom.vue'
 import ConnectToRoom from './views/PRS/ConnectToRoom.vue'
 import GameLayout from './views/GameLayout.vue'
-import spyCreateRoom from './views/SPY/CreateRoom.vue'
-import spyGameRoom from './views/SPY/GameRoom.vue'
-import spyConnectToRoom from './views/SPY/ConnectToRoom.vue'
+import spyCreateRoom from './views/SPY/SpyCreateRoom.vue'
+import spyGameRoom from './views/SPY/SpyGameRoom.vue'
+import spyConnectToRoom from './views/SPY/SpyConnectToRoom.vue'
 import TodCreateRoom from './views/TOD/TodCreateRoom.vue'
 import TodGameRoom from './views/TOD/TodGameRoom.vue'
 import DataView from './components/DataView.vue'
@@ -51,7 +51,7 @@ const routes = [
     },
 
     {
-        path: '/connect/:id',
+        path: '/spy/connect/:id',
         name: "Connect",
         component: spyConnectToRoom
     },

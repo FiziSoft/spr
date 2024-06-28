@@ -1,13 +1,16 @@
 <template>
 
    <div class="mainContainer mainPage">
+
        <div class="text-gradient">Fizi Games</div> <hr> <br>
+
       <div>Найкращі настільні ігри Онлайн для компаній</div>
        <div  class="name_game">
           <a :href="network_url+'/CreateRoom'"><h1 class="">
             <i class="fa-solid fa-hands-asl-interpreting"></i>
             <div>Камінь Ножиці Бумага</div></h1></a>
        </div>
+
        <div  class="name_game">
           <a :href="network_url+'/spy/CreateRoom'"><h1 class="">
             <i class="fa-solid fa-user-secret"></i>
@@ -19,9 +22,14 @@
             <i class="fa-solid fa-hat-wizard"></i>
             <div>Правда або Дія</div></h1></a>
        </div>
+
+       <div  class="name_game">
+          <a :href="network_url+'/battle-see' "><h1 class="">
+            <i class="fa-solid fa-hat-wizard"></i>
+            <div>BattleSee</div></h1></a>
+       </div>
    
-   
-   
+       BattleSee
    
    
    <br>

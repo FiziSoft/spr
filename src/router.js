@@ -10,7 +10,9 @@ import spyConnectToRoom from './views/SPY/SpyConnectToRoom.vue'
 import TodCreateRoom from './views/TOD/TodCreateRoom.vue'
 import TodGameRoom from './views/TOD/TodGameRoom.vue'
 import DataView from './components/DataView.vue'
-
+import BattleSee from './views/BattleSee/BattleSee'
+import BattleSeeCreateRoom from './views/BattleSee/BattleSeeCreateRoom'
+import TruthDareCrud from './views/TOD/TruthDareCrud'
 
 const routes = [
     {
@@ -72,6 +74,24 @@ const routes = [
         name: 'DataView',
         component: DataView,
         props: true
+    }
+    ,
+    {
+        path: '/battle-see',
+        name: 'BattleSee',
+        component: BattleSeeCreateRoom,
+        props: true
+    },
+    {
+        path: '/battle-see/:roomId/:playerId',
+        name: 'BattleSeeGameRoom',
+        component: BattleSee,
+    }
+    ,
+    {
+        path: '/crud',
+        name: 'TruthDareCrud',
+        component: TruthDareCrud,
     }
 ]
 
